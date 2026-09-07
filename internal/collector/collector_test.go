@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/navaf/urlenum/internal/config"
+	"github.com/navaf-pt/urlenum/internal/config"
 )
 
 func TestTimeoutFor(t *testing.T) {

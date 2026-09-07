@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/navaf/urlenum/internal/collector"
-	"github.com/navaf/urlenum/internal/config"
-	"github.com/navaf/urlenum/internal/ui"
+	"github.com/navaf-pt/urlenum/internal/collector"
+	"github.com/navaf-pt/urlenum/internal/config"
+	"github.com/navaf-pt/urlenum/internal/ui"
 )
 
 const version = "1.0.0"

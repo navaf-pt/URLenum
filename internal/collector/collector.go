@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/navaf/urlenum/internal/config"
-	"github.com/navaf/urlenum/internal/output"
-	"github.com/navaf/urlenum/internal/sources"
-	"github.com/navaf/urlenum/internal/ui"
+	"github.com/navaf-pt/urlenum/internal/config"
+	"github.com/navaf-pt/urlenum/internal/output"
+	"github.com/navaf-pt/urlenum/internal/sources"
+	"github.com/navaf-pt/urlenum/internal/ui"
 )
 
 type Runner struct{ cfg config.Config }

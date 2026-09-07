@@ -45,7 +45,7 @@ func Banner() {
 		" | |_| |  _ <| |__|  __/ | | | |_| | | | | | |      \n" +
 		"  \\___/|_| \\_\\_____\\___|_| |_|\\__,_|_| |_| |_|      \n" +
 		reset + "\n" +
-		green + "                               By github.com/nazz211" + reset + "\n\n")
+		green + "                               By github.com/navaf-pt" + reset + "\n\n")
 }
 
 func Info(format string, args ...any) {
