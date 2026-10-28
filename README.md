@@ -1,14 +1,5 @@
-```text
- _   _ ____  _                                      
-| | | |  _ \| |    ___ _ __  _   _ _ __ ___        
-| | | | |_) | |   / _ \ '_ \| | | | '_ ` _ \       
-| |_| |  _ <| |__|  __/ | | | |_| | | | | | |      
- \___/|_| \_\_____|\___|_| |_|\__,_|_| |_| |_|      
-
-						 By Navaf
-```
-
-# urlenum
+# URLenum
+<img width="1221" height="627" alt="Screenshot From 2026-10-28 17-17-07" src="https://github.com/user-attachments/assets/a909aa7b-e475-4aec-b360-e9e6583c8e1b" />
 
 `urlenum` is a fast, standalone Go CLI for authorized security reconnaissance and bug bounty URL discovery. It runs independent public URL collectors one at a time in a predictable order, preserves complete URL strings including query parameters, and writes one sorted, deduplicated `.txt` result.
 
@@ -114,4 +105,3 @@ GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o urlenum-darw
 ## Responsible Use
 
 Use `urlenum` only against domains for which you have explicit authorization, such as your own assets or an applicable bug bounty scope. Respect program rules, robots and provider rate limits, target availability, and public-source terms. The operator is responsible for authorization and all use of the collected URLs.
-# URLenum
