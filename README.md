@@ -1,5 +1,14 @@
-# URLenum
-<img width="1221" height="627" alt="Screenshot From 2026-10-28 17-17-07" src="https://github.com/user-attachments/assets/a909aa7b-e475-4aec-b360-e9e6583c8e1b" />
+```text
+ _   _ ____  _                                      
+| | | |  _ \| |    ___ _ __  _   _ _ __ ___        
+| | | | |_) | |   / _ \ '_ \| | | | '_ ` _ \       
+| |_| |  _ <| |__|  __/ | | | |_| | | | | | |      
+ \___/|_| \_\_____|\___|_| |_|\__,_|_| |_| |_|      
+
+						 By Navaf
+```
+
+# urlenum
 
 `urlenum` is a fast, standalone Go CLI for authorized security reconnaissance and bug bounty URL discovery. It runs independent public URL collectors one at a time in a predictable order, preserves complete URL strings including query parameters, and writes one sorted, deduplicated `.txt` result.
 
@@ -9,7 +18,7 @@ This project performs URL enumeration only. It does not test vulnerabilities, fu
 
 - Sequential external and native HTTP collectors with bounded per-tool workers.
 - Graceful cancellation on `SIGINT` and `SIGTERM`, including child process cancellation.
-- Per-collector timeout, crawl depth, and collector concurrency settings. Katana receives a bounded crawl window of three times the configured timeout while retaining that value as its per-request timeout.
+- Per-collector timeout, crawl depth, and collector concurrency settings. Gau receives a ten-times collection budget and Katana receives a five-times crawl budget; the configured timeout is passed to supported tools as their HTTP timeout.
 - One `.txt` output file containing results from all sources and domains.
 - Sorting and exact-string deduplication are always applied before writing.
 - Missing optional tools are skipped while the remaining collectors continue.
@@ -22,19 +31,20 @@ The default sources are:
 
 - `gau`: Wayback Machine and other public providers supported by gau.
 - `waybackurls`: Wayback Machine historical URLs.
-- `waymore`: URL-only mode using its public sources; response downloading is disabled.
 - `urlfinder`: passive subdomain discovery from configured public sources.
 - `katana`: conservative standard crawling only, with configurable depth and bounded workers, page count, response size, and request rate.
 - `hakrawler`: optional conservative crawling fallback.
 - Wayback Machine CDX: native `net/http` request with original URLs and query strings.
 
-As of September 2026, `katana`, `waymore`, `gau`, and `hakrawler` have active upstream repository activity. `waybackurls` is mature and stable, but its upstream release history is older. All external tools remain optional and are checked at runtime.
+As of September 2026, `katana`, `gau`, and `hakrawler` have active upstream repository activity. `waybackurls` is mature and stable, but its upstream release history is older. All external tools remain optional and are checked at runtime.
 
 ## Installation
 
 Build from this repository:
 
 ```sh
+git clone https://github.com/navaf-pt/URLenum.git
+cd /URLenum
 go build -o urlenum .
 ```
 
@@ -46,7 +56,6 @@ go install github.com/tomnomnom/waybackurls@latest
 go install github.com/projectdiscovery/katana/cmd/katana@latest
 go install github.com/projectdiscovery/urlfinder/cmd/urlfinder@latest
 go install github.com/hakluke/hakrawler@latest
-pipx install git+https://github.com/xnl-h4ck3r/waymore.git
 ```
 
 The executable directories must be in `PATH`. `curl` and `jq` are checked for operator visibility but are not required by the Go implementation.
@@ -68,7 +77,7 @@ Available flags:
 -l, --list FILE        newline-delimited domain list
 -o, --output FILE      output `.txt` file (default: all-urls.txt)
 --threads NUM          worker threads used by supported collectors (default: 6)
---timeout NUM          timeout per collector request in seconds (default: 180; Katana crawl budget: 3x)
+--timeout NUM          timeout per collector request in seconds (default: 180; gau budget: 10x, Katana budget: 5x)
 --depth NUM            crawl depth for Katana and hakrawler (default: 2)
 --dedupe               compatibility flag; deduplication is always enabled
 --check                report installed dependencies and exit
@@ -89,18 +98,6 @@ For `-d example.com`, output is written to `all-urls.txt` in the current directo
 ```
 
 Only the final `.txt` file is kept. URLs from all successful collectors and all requested domains are combined, sorted lexicographically, and deduplicated by exact string. URLs are not normalized or filtered, and historical URLs are retained even when they are no longer reachable.
-
-## Cross-Compilation
-
-The project uses only the Go standard library and can be cross-compiled with `CGO_ENABLED=0`:
-
-```sh
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o urlenum-linux-amd64 .
-GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o urlenum-linux-arm64 .
-GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o urlenum-windows-amd64.exe .
-GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o urlenum-darwin-amd64 .
-GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o urlenum-darwin-arm64 .
-```
 
 ## Responsible Use
 

@@ -16,15 +16,19 @@ type Runner struct{ cfg config.Config }
 
 func New(cfg config.Config) Runner { return Runner{cfg: cfg} }
 
-// timeoutFor returns the total time a collector may run. Katana's -timeout
-// option limits individual HTTP requests, not the complete crawl, so a crawl
-// needs additional time to process multiple in-scope pages.
+// timeoutFor returns the total time a collector may run. Crawlers and broad
+// archive collectors may make many requests, so their total budget is larger
+// than their configured per-request timeout.
 func (r Runner) timeoutFor(name string) time.Duration {
 	timeout := time.Duration(r.cfg.Timeout) * time.Second
-	if name == "katana" {
-		return timeout * 3
+	switch name {
+	case "gau":
+		return timeout * 10
+	case "katana":
+		return timeout * 5
+	default:
+		return timeout
 	}
-	return timeout
 }
 
 func (r Runner) Run(ctx context.Context) error {
@@ -47,23 +51,23 @@ func (r Runner) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	ui.Success("Complete: %d unique URLs", total)
-	ui.Success("Output: %s", target.Output)
+	ui.Result("Complete: %d unique URLs", total)
+	ui.Result("Output: %s", target.Output)
 	return nil
 }
 
 func (r Runner) runDomain(ctx context.Context, target output.Target, domain string) error {
-	ui.Info("Target: %s", domain)
+	ui.Target("Target: %s", domain)
 	katanaThreads := r.cfg.Threads
 	if katanaThreads > 2 {
 		katanaThreads = 2
 	}
+	katanaBudget := int(r.timeoutFor("katana") / time.Second)
 	jobs := map[string]sources.Runner{
-		"gau":         sources.External("gau", "{domain}", "--threads", fmt.Sprint(r.cfg.Threads)),
+		"gau":         sources.External("gau", "{domain}", "--threads", fmt.Sprint(r.cfg.Threads), "--timeout", fmt.Sprint(r.cfg.Timeout)),
 		"waybackurls": sources.External("waybackurls"),
-		"waymore":     sources.External("waymore", "-i", "{domain}", "-mode", "U", "--stream"),
 		"urlfinder":   sources.External("urlfinder", "-d", "{domain}", "-silent"),
-		"katana":      sources.External("katana", "-u", "https://{domain}", "-d", fmt.Sprint(r.cfg.Depth), "-c", fmt.Sprint(katanaThreads), "-p", "1", "-mdp", "100", "-mrs", "1048576", "-rl", "10", "-timeout", fmt.Sprint(r.cfg.Timeout), "-silent"),
+		"katana":      sources.External("katana", "-u", "https://{domain}", "-d", fmt.Sprint(r.cfg.Depth), "-c", fmt.Sprint(katanaThreads), "-p", "1", "-mdp", "100", "-mrs", "1048576", "-rl", "10", "-timeout", fmt.Sprint(r.cfg.Timeout), "-ct", fmt.Sprint(katanaBudget), "-silent"),
 		"hakrawler":   sources.External("hakrawler", "-d", fmt.Sprint(r.cfg.Depth), "-t", fmt.Sprint(r.cfg.Threads), "-timeout", fmt.Sprint(r.cfg.Timeout), "-subs", "-u"),
 		"wayback-cdx": sources.WaybackCDX,
 	}

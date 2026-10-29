@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var Sources = []string{"gau", "waybackurls", "waymore", "urlfinder", "katana", "hakrawler", "wayback-cdx"}
+var Sources = []string{"gau", "waybackurls", "urlfinder", "katana", "hakrawler", "wayback-cdx"}
 
 type Target struct {
 	Output string

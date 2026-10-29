@@ -10,10 +10,10 @@ import (
 func TestTimeoutFor(t *testing.T) {
 	runner := New(config.Config{Timeout: 180})
 
-	if got, want := runner.timeoutFor("gau"), 180*time.Second; got != want {
-		t.Errorf("non-Katana timeout = %s, want %s", got, want)
+	if got, want := runner.timeoutFor("gau"), 30*time.Minute; got != want {
+		t.Errorf("gau timeout = %s, want %s", got, want)
 	}
-	if got, want := runner.timeoutFor("katana"), 540*time.Second; got != want {
+	if got, want := runner.timeoutFor("katana"), 15*time.Minute; got != want {
 		t.Errorf("Katana timeout = %s, want %s", got, want)
 	}
 }
